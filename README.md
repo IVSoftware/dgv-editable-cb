@@ -24,6 +24,8 @@ ___
 **Minimal Example**
 
 Here's the code I used to test this answer:
+
+
 ~~~
 public partial class MainForm : Form
 {
@@ -37,7 +39,11 @@ public partial class MainForm : Form
         var indexReplace = dataGridView.Columns[nameof(Record.Selectable)].Index;
 
         // Swap out the default bound column for the custom one.
-        var dropListColumn = new DataGridViewComboBoxColumnEx{ Name = "DropList", };
+        var dropListColumn = new DataGridViewComboBoxColumnEx
+        { 
+            Name = "DropList", 
+            DataPropertyName = nameof(Record.Selectable),
+        };
         dropListColumn.Items.AddRange(["Option A", "Option B", "Option C"]);
         dataGridView.Columns.RemoveAt(indexReplace);
         dataGridView.Columns.Insert(indexReplace, dropListColumn);
@@ -59,7 +65,21 @@ public partial class MainForm : Form
 class Record
 {
     public string? Description { get; set; }
-    public string? Selectable { get; set; }
+
+    public string? Selectable
+    {
+        get => _selectable;
+        set
+        {
+            if (!Equals(_selectable, value))
+            {
+                _selectable = value;
+                Debug.WriteLine($"PropertyChanged {Selectable}");
+            }
+        }
+    }
+    string? _selectable = default;
+
 }
 class DataGridViewComboBoxColumnEx : DataGridViewComboBoxColumn, IEnumerable
 {
@@ -145,6 +165,7 @@ class DataGridViewComboBoxEditingControlEx : DataGridViewComboBoxEditingControl
     }
 }
 ~~~
+
 
 
   [1]: https://i.sstatic.net/tavtF1yf.png
