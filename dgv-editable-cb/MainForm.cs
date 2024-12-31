@@ -32,13 +32,6 @@ namespace dgv_editable_cb
             {
                 Debug.WriteLine($"Validating {e.FormattedValue}");
             };
-            dataGridView.CellValidated += (sender, e) =>
-            {
-                if (Records[e.RowIndex] is not null)
-                {
-                    Debug.WriteLine($"Validated {Records[e.RowIndex].Selectable}");
-                }
-            };
             for (int i = 1; i <= 5; i++)
             {
                 Records.Add(new Record
@@ -52,7 +45,21 @@ namespace dgv_editable_cb
     class Record
     {
         public string? Description { get; set; }
-        public string? Selectable { get; set; }
+
+        public string? Selectable
+        {
+            get => _selectable;
+            set
+            {
+                if (!Equals(_selectable, value))
+                {
+                    _selectable = value;
+                    Debug.WriteLine($"PropertyChanged {Selectable}");
+                }
+            }
+        }
+        string? _selectable = default;
+
     }
     class DataGridViewComboBoxColumnEx : DataGridViewComboBoxColumn, IEnumerable
     {
