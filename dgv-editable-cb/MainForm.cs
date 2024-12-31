@@ -2,6 +2,7 @@
 using System.Collections;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.Serialization.DataContracts;
 using System.Windows.Forms;
 
 namespace dgv_editable_cb
@@ -18,7 +19,11 @@ namespace dgv_editable_cb
             var indexReplace = dataGridView.Columns[nameof(Record.Selectable)].Index;
 
             // Swap out the default bound column for the custom one.
-            var dropListColumn = new DataGridViewComboBoxColumnEx{ Name = "DropList", };
+            var dropListColumn = new DataGridViewComboBoxColumnEx
+            { 
+                Name = "DropList", 
+                DataPropertyName = nameof(Record.Selectable),
+            };
             dropListColumn.Items.AddRange(["Option A", "Option B", "Option C"]);
             dataGridView.Columns.RemoveAt(indexReplace);
             dataGridView.Columns.Insert(indexReplace, dropListColumn);
@@ -26,6 +31,13 @@ namespace dgv_editable_cb
             dataGridView.CellValidating += (sender, e) =>
             {
                 Debug.WriteLine($"Validating {e.FormattedValue}");
+            };
+            dataGridView.CellValidated += (sender, e) =>
+            {
+                if (Records[e.RowIndex] is not null)
+                {
+                    Debug.WriteLine($"Validated {Records[e.RowIndex].Selectable}");
+                }
             };
             for (int i = 1; i <= 5; i++)
             {
